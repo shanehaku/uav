@@ -37,35 +37,65 @@ def recv():
 
 print ('\r\n\r\nTello Python3 Demo.\r\n')
 
-print ('Tello: command takeoff land flip forward back left right \r\n       up down cw ccw speed speed?\r\n')
-
-print ('end -- quit demo.\r\n')
+# print ('Tello: command takeoff land flip forward back left right \r\n       up down cw ccw speed speed?\r\n')
+#
+# print ('end -- quit demo.\r\n')
 
 
 #建立thread在背景執行，讓電腦可以收到無人機的response
 recvThread = threading.Thread(target=recv)
 recvThread.start()
 
-#進入無限迴圈，讓你可以用鍵盤輸入控制命令
-while True: 
+class Command:
+    def __init__(self, name, time):
+        self.name = name
+        self.time = time
 
-    try:
-        msg = input("Enter your command: ");
+commands = [
+    Command("command", 5.0),
+    Command("battery?", 1.0),
+    Command("takeoff", 5.0),
+    Command("flip b", 5.0),
+    Command("down 20", 5.0),
+    Command("forward 200", 5.0),
+    Command("up 100", 5.0),
+    Command("flip f", 5.0),
+    Command("forward 110", 5.0),
+    Command("land", 5.0)
+]
 
-        if not msg:
-            continue  
+for command in commands:
+    msg = command.name
+    msg = msg.encode(encoding="utf-8") 
+    sent = sock.sendto(msg, tello_address)
+    time.sleep(command.time)
 
-        if 'end' in msg:
-            print ('...')
-            sock.close()  
-            break
+sock.close()  
 
-        # Send data
-        # you have to send "command" first
-        msg = msg.encode(encoding="utf-8") 
-        sent = sock.sendto(msg, tello_address)
-        time.sleep(0.1)
-    except KeyboardInterrupt:
-        print ('\n . . .\n')
-        sock.close()  
-        break
+# 進入無限迴圈，讓你可以用鍵盤輸入控制命令
+# while True: 
+#
+#     try:
+#         msg = input("Enter your command: ");
+#
+#         if not msg:
+#             continue  
+#
+#         if 'end' in msg:
+#             print ('...')
+#             sock.close()  
+#             break
+#
+#         # Send data
+#         # you have to send "command" first
+#         msg = msg.encode(encoding="utf-8") 
+#         sent = sock.sendto(msg, tello_address)
+#         time.sleep(0.1)
+#     except KeyboardInterrupt:
+#         print ('\n . . .\n')
+#         sock.close()  
+#         break
+#
+#
+#
+#
